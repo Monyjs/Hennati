@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Henati Shopping</title>
+    <!-- Tailwind CSS CDN for standalone functionality -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @keyframes logo-entrance {
+        0% { transform: scale(0.8); opacity: 0; filter: blur(10px); }
+        100% { transform: scale(1); opacity: 1; filter: blur(0); }
+      }
+      
+      @keyframes text-slide-up {
+        0% { transform: translateY(20px); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+      }
+      
+      @keyframes background-pulse {
+        0%, 100% { opacity: 0.3; }
+        50% { opacity: 0.5; }
+      }
+
+      .animate-logo { animation: logo-entrance 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+      .animate-title { animation: text-slide-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.5s forwards; opacity: 0; }
+      .animate-subtitle { animation: text-slide-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) 0.8s forwards; opacity: 0; }
+      
+      .bg-glow {
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(234, 179, 8, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(40px);
+        animation: background-pulse 4s infinite ease-in-out;
+      }
+
+      /* Custom animations for products */
+      .product-card {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.5s ease-out;
+      }
+      .product-card.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* Toast Notification */
+      #toast {
+        visibility: hidden;
+        min-width: 200px;
+        background-color: #eab308;
+        color: #000;
+        text-align: center;
+        border-radius: 50px;
+        padding: 12px 24px;
+        position: fixed;
+        z-index: 100;
+        bottom: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      }
+      #toast.show {
+        visibility: visible;
+        animation: fadein 0.5s, fadeout 0.5s 2.5s;
+      }
+      @keyframes fadein { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+      @keyframes fadeout { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+    </style>
+  </head>
+  <body class="bg-black text-white font-sans overflow-hidden">
+    <!-- Toast Notification -->
+    <div id="toast">تمت الإضافة للسلة!</div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen" class="fixed inset-0 flex flex-col items-center justify-center bg-black z-50 transition-opacity duration-1000">
+      <div class="bg-glow"></div>
+      <div class="flex flex-col items-center relative z-10">
+        <div class="animate-logo">
+          <img
+            src="https://i.pinimg.com/736x/7b/90/45/7b904578eaa0ed24257653d8c6609b74.jpg"
+            alt="Henati Logo"
+            class="w-40 h-40 object-cover rounded-full mb-8 border border-yellow-500/30 shadow-[0_0_30px_rgba(234,179,8,0.1)]"
+            referrerpolicy="no-referrer"
+          />
+        </div>
+        <h1 class="text-5xl font-bold tracking-[0.2em] text-white mb-2 animate-title uppercase">
+          Henati
+        </h1>
+        <div class="flex items-center gap-4 animate-subtitle">
+          <div class="h-[1px] w-8 bg-yellow-500/50"></div>
+          <p class="text-lg text-yellow-500 font-light tracking-widest">
+            حنتي
+          </p>
+          <div class="h-[1px] w-8 bg-yellow-500/50"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main-content" class="opacity-0 translate-y-5 transition-all duration-1000 p-6">
+      <header class="flex justify-between items-center mb-8">
+        <div class="flex items-center gap-3">
+          <img 
+            src="https://i.pinimg.com/736x/7b/90/45/7b904578eaa0ed24257653d8c6609b74.jpg" 
+            alt="Henati Logo Small" 
+            class="w-10 h-10 rounded-full border border-yellow-500/30 object-cover"
+            referrerpolicy="no-referrer"
+          />
+          <div class="flex flex-col">
+            <span class="text-2xl font-bold leading-tight">Henati</span>
+            <span class="text-xs text-yellow-500">حنتي</span>
+          </div>
+        </div>
+        <div class="relative">
+          <div class="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-bag"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          </div>
+          <span id="cart-count" class="absolute -top-1 -right-1 bg-yellow-500 text-black text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center scale-0 transition-transform duration-300">0</span>
+        </div>
+      </header>
+      
+      <div class="space-y-3">
+        <h2 class="text-lg font-semibold">Exclusive Collection</h2>
+        <p class="text-xs text-zinc-400">Premium products at 15 SAR each.</p>
+        
+        <div class="grid grid-cols-2 gap-3 mt-4 pb-10" id="product-grid">
+          <!-- Products will be enhanced with JS -->
+        </div>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      const products = [
+        "https://i.pinimg.com/736x/13/75/0a/13750a0ab08cfced49a4e99a949dd608.jpg",
+        "https://i.pinimg.com/736x/69/3c/94/693c949dbc62f028d4416813b19ae2df.jpg",
+        "https://i.pinimg.com/736x/b5/48/57/b54857e8c294ac53df73ead9e519b169.jpg",
+        "https://i.pinimg.com/736x/f1/9b/f6/f19bf6723173b7dc72196a9c2c7c8007.jpg",
+        "https://i.pinimg.com/736x/28/5b/51/285b51a34214919ccdbd0eb19f3e0c51.jpg",
+        "https://i.pinimg.com/736x/60/2d/eb/602deb382df362a146ebfecdacb72fb8.jpg",
+        "https://i.pinimg.com/736x/26/4f/39/264f39bca4ce481b130335d9de0af16c.jpg",
+        "https://i.pinimg.com/736x/fc/bb/80/fcbb8050030cb34b85c9c61d5842e923.jpg",
+        "https://i.pinimg.com/736x/fb/35/af/fb35aff5a6f5c30f7369cd0ee6b4af7e.jpg",
+        "https://i.pinimg.com/736x/db/a2/62/dba262053645473acd423e416d34cc43.jpg"
+      ];
+
+      let cartCount = 0;
+
+      function updateCart() {
+        cartCount++;
+        const countBadge = document.getElementById('cart-count');
+        countBadge.innerText = cartCount;
+        countBadge.classList.remove('scale-0');
+        countBadge.classList.add('scale-100');
+        
+        // Show toast
+        const toast = document.getElementById("toast");
+        toast.className = "show";
+        setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+      }
+
+      function renderProducts() {
+        const grid = document.getElementById('product-grid');
+        products.forEach((img, index) => {
+          const card = document.createElement('div');
+          card.className = `product-card bg-zinc-900 rounded-xl overflow-hidden border border-zinc-800 flex flex-col`;
+          card.style.transitionDelay = `${index * 50}ms`;
+          card.innerHTML = `
+            <img src="${img}" alt="Henati Product" class="w-full aspect-square object-cover" referrerpolicy="no-referrer">
+            <div class="p-2">
+              <div class="flex justify-between items-center">
+                <span class="text-yellow-500 font-bold text-sm">15 ريال</span>
+                <button onclick="updateCart()" class="bg-yellow-500 text-black p-1 rounded-full hover:scale-110 transition-transform active:scale-95">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-plus"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                </button>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        renderProducts();
+        const splashScreen = document.getElementById('splash-screen');
+        const mainContent = document.getElementById('main-content');
+
+        setTimeout(() => {
+          if (splashScreen && mainContent) {
+            splashScreen.style.opacity = '0';
+            setTimeout(() => {
+              splashScreen.style.display = 'none';
+              mainContent.classList.remove('opacity-0', 'translate-y-5');
+              mainContent.classList.add('opacity-100', 'translate-y-0');
+              document.body.classList.remove('overflow-hidden');
+              
+              // Animate products in
+              document.querySelectorAll('.product-card').forEach(card => {
+                card.classList.add('visible');
+              });
+            }, 1000);
+          }
+        }, 3000);
+      });
+    </script>
+  </body>
+</html>
+
